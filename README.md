@@ -1,36 +1,205 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Тестовое задание для создания заказов в системе TableCRM.
 
-## Getting Started
+## 🚀 Технологический стек
 
-First, run the development server:
+- **Next.js 15** - React framework с App Router
+- **TypeScript** - Типизация
+- **Tailwind CSS v4** - Стилизация
+- **shadcn/ui** - UI компоненты
+- **Zustand** - State management
+- **Axios** - HTTP клиент
+- **Zod** - Валидация
+- **React Hook Form** - Управление формами
+- **@tanstack/react-virtual** - Виртуализация списков
+- **pnpm** - Package manager
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 📁 Структура проекта
+
+```
+src/
+├── app/                          # Next.js App Router
+│   ├── layout.tsx               # Root layout
+│   └── page.tsx                 # Главная страница
+│
+├── components/
+│   ├── ui/                      # shadcn/ui компоненты
+│   │   ├── button.tsx
+│   │   ├── input.tsx
+│   │   ├── select.tsx
+│   │   ├── card.tsx
+│   │   ├── dialog.tsx
+│   │   ├── command.tsx
+│   │   ├── popover.tsx
+│   │   └── virtualized-combobox.tsx  # Виртуализированный combobox
+│   │
+│   ├── forms/                   # Формы
+│   │   ├── TokenForm.tsx        # Форма авторизации
+│   │   ├── ClientSearch.tsx     # Поиск клиента
+│   │   ├── OrderForm.tsx        # Основная форма заказа
+│   │   └── ProductSelector.tsx  # Выбор товаров
+│   │
+│   └── layout/                  # Компоненты layout
+│       ├── Header.tsx           # Шапка
+│       └── OrderSummary.tsx     # Итоги заказа
+│
+├── lib/
+│   ├── api/
+│   │   ├── client.ts            # Axios instance с interceptors
+│   │   ├── endpoints.ts         # API методы
+│   │   └── types.ts             # TypeScript типы
+│   │
+│   ├── stores/
+│   │   └── order-store.ts       # Zustand store
+│   │
+│   └── utils.ts                 # Утилиты
+│
+└── hooks/
+    ├── useTableCRM.ts           # Hook для синхронизации токена
+    └── useDebounce.ts           # Debounce hook
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🎨 Архитектурные решения
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 1. **State Management (Zustand)**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Централизованное хранение состояния заказа
+- Персистентность токена в localStorage
+- Реактивные вычисления (totals, discounts)
 
-## Learn More
+### 2. **API Layer**
 
-To learn more about Next.js, take a look at the following resources:
+- Singleton Axios instance
+- Автоматическое добавление токена в requests
+- Обработка ошибок через interceptors
+- Нормализация ответов API (поддержка `{ data: [] }` и `[]`)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 3. **Виртуализация**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `VirtualizedCombobox` для больших списков
+- Рендеринг только видимых элементов
+- Поиск с debounce
+- Оптимизация производительности
 
-## Deploy on Vercel
+### 4. **Формы**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Компонентный подход
+- Валидация на клиенте
+- Debounced search для API requests
+- Loading states
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🔑 Основные возможности
+
+### ✅ Авторизация
+
+- Ввод токена кассы
+- Валидация токена через API
+- Сохранение в localStorage
+
+### 👤 Работа с клиентами
+
+- Поиск по номеру телефона (debounced)
+- Выбор из найденных
+- Создание нового клиента
+
+### 📦 Создание заказа
+
+- Выбор счета, организации, склада
+- Выбор типа цен
+- Добавление товаров с поиском
+- Управление количеством и скидками
+- Автоматический расчет итоговой суммы
+
+### 🎯 Два режима создания
+
+- **Создать** - черновик заказа
+- **Создать и провести** - сразу проведенный заказ
+
+## 📋 API Endpoints
+
+```typescript
+// Клиенты
+GET  /contragents/?phone=...
+POST /contragents/
+
+// Склады
+GET /warehouses/
+
+// Счета
+GET /payboxes/
+
+// Организации
+GET /organizations/
+
+// Типы цен
+GET /price_types/
+
+// Товары
+GET /nomenclature/?search=...
+
+// Заказы
+POST /docs_sales/
+```
+
+## 🚦 Установка и запуск
+
+```bash
+# Установка зависимостей
+pnpm install
+
+# Запуск в режиме разработки
+pnpm dev
+
+# Сборка для production
+pnpm build
+
+# Запуск production версии
+pnpm start
+```
+
+## 📱 Особенности мобильного UI
+
+- Адаптивный дизайн для мобильных устройств
+- Фиксированный header и footer
+- Оптимизированные touch-интерфейсы
+- Виртуализация для производительности
+- Debounced поиск для экономии трафика
+
+## 🎯 Оптимизации
+
+1. **Виртуализация списков** - только видимые элементы в DOM
+2. **Debounce** - задержка API запросов при поиске
+3. **Code splitting** - автоматический в Next.js
+4. **Lazy loading** - компоненты загружаются по требованию
+5. **Persisted state** - сохранение токена между сессиями
+
+## 📦 Payload структура заказа
+
+```typescript
+{
+  priority: 0,
+  dated: 1234567890,              // Unix timestamp
+  operation: "Заказ",
+  tax_included: true,
+  tax_active: true,
+  goods: [
+    {
+      nomenclature: 1,
+      quantity: 2,
+      unit: 116,
+      price: 400,
+      discount: 10,
+      sum_discounted: 10
+    }
+  ],
+  settings: {},
+  warehouse: 39,
+  contragent: 793110,
+  paybox: 550,
+  organization: 1,
+  price_type: 1 // опционально
+}
+```
+
+---
+
+**TableCRM Mobile** - современное решение для мобильных продаж 🚀
